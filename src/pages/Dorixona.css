@@ -1,0 +1,93 @@
+/* Dorixona.css */
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+*{
+    font-family: "Poppins", sans-serif;
+
+}
+
+
+.dorixona {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.title {
+  text-align: left;
+  font-family: "Ubuntu", sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: #333;
+}
+
+table {
+  border-radius: 20px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  /* border-radius: 20px; */
+  border: none;
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #f4f4f4;
+}
+.container {
+  width: 100%;
+  height: 100vh;
+  padding: 20px;
+  background: #e0f7fa;
+}
+
+h1 {
+  color: #00AFD5;
+  
+
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px;
+  margin: 20px 0;
+  border: 1px solid #00AFD5;
+  border-radius: 5px;
+}
+
+.pharmacy-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pharmacy-table th, .pharmacy-table td {
+  padding: 10px;
+  border: 1px solid #00AFD5;
+  text-align: left;
+
+}
+
+.pharmacy-table th {
+  background-color: #00AFD5;
+  color: #ffffff;
+}
+.check{
+  width: 5px;
+}
+/* Checkbox'ni yanada kichikroq qilish */
+.checkbox-custom {
+  width: 16px; /* Kichikroq kenglik */
+  height: 16px; /* Kichikroq balandlik */
+  margin: 0; /* Atrofidagi bo'shliqni olib tashlash */
+  padding: 0; /* Ichki bo'shliqni olib tashlash */
+  border: 1px solid #00AFD5; /* Chegarasi */
+  margin-right: 10px;
+}
+
+.checkbox-custom:checked {
+  background-color: #42B6B3; /* Tanlangan checkbox uchun rang */
+  border: 1px solid #42B6B3; /* Tanlangan checkbox uchun chegarasi */
+}
