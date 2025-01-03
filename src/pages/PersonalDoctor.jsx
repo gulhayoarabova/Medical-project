@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../App.css';
 import imgDoctor from "../assets/PersonalDoctor.png";
 import { Card, CardHeader, Input, Typography, Avatar, Button } from "@material-tailwind/react";
@@ -16,37 +16,171 @@ function StarIcon() {
   );
 }
 
-const doctors = [
-  { name: "Dr.John", specialty: "Tish shifokori", image: imgDoctor },
-  { name: "Dr.Tania", specialty: "Pediator shifokori", image: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-1.jpg" },
-  { name: "Dr.Wert", specialty: "Ginekolog shifokori", image: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-6.jpg" },
-  { name: "Dr.Gran", specialty: "Nevrolog shifokori", image: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-3.jpg" },
-  { name: "Dr.Levu", specialty: "Psixiator shifokori", image: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-4.jpg" },
-  { name: "Dr.Walker", specialty: "Psixiator shifokori", image: "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-4.jpg" },
-];
-
 function PersonalDoctor() {
+  const [doctors, setDoctors] = useState([]);
+  const [newDoctor, setNewDoctor] = useState({ dName: "", sphere: "" });
+  const [editDoctor, setEditDoctor] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);  // Simulate admin role
+
+  const staticImages = [
+    imgDoctor,
+    "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-1.jpg",
+    "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-6.jpg",
+    "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-3.jpg",
+    "https://demos.creative-tim.com/test/corporate-ui-dashboard/assets/img/team-4.jpg",
+  ];
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await fetch("http://localhost:3333/doc");
+        const data = await response.json();
+        setDoctors(data);
+      } catch (error) {
+        console.error("Error fetching doctors:", error);
+      }
+    };
+    fetchDoctors();
+  }, []);
+
+  const handleAddDoctor = async () => {
+    try {
+      const response = await fetch("http://localhost:3333/doc", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newDoctor),
+      });
+
+      if (response.ok) {
+        const addedDoctor = await response.json();
+        setDoctors((prevDoctors) => [...prevDoctors, addedDoctor]);
+        setNewDoctor({ dName: "", sphere: "" });
+      }
+    } catch (error) {
+      console.error("Error adding doctor:", error);
+    }
+  };
+
+  const handleUpdateDoctor = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:3333/doc/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(editDoctor),
+      });
+
+      if (response.ok) {
+        const updatedDoctor = await response.json();
+        setDoctors((prevDoctors) =>
+          prevDoctors.map((doctor) => (doctor._id === id ? updatedDoctor : doctor))
+        );
+        setEditDoctor(null);
+      }
+    } catch (error) {
+      console.error("Error updating doctor:", error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await fetch(`http://localhost:3333/doc/${id}`, {
+        method: "DELETE",
+      });
+      setDoctors((prevDoctors) => prevDoctors.filter((doctor) => doctor._id !== id));
+    } catch (error) {
+      console.error("Error deleting doctor:", error);
+    }
+  };
+
   return (
-    <div className="flex ml-[5rem] flex-wrap gap-3 pt-9">
-      {doctors.map((doctor, index) => (
-        <Card key={index} color="transparent" shadow={false} className="w-full hover:shadow-lg duration-500 max-w-[21rem] border border-gray-300 bg-white p-5">
-          <CardHeader color="transparent" floated={false} shadow={false} className="mx-0 flex items-center gap-4 pt-0 pb-8">
-            <Avatar size="lg" variant="circular" src={doctor.image} alt={`Doctor ${doctor.name}`} />
-            <div className="flex w-full flex-col gap-0.5">
-              <div className="flex items-center justify-between">
-                <Typography variant="h5" color="blue-gray">{doctor.name}</Typography>
-                <div className="flex items-center gap-0">
-                  {[...Array(5)].map((_, i) => <StarIcon key={i} />)}
+    <div className="flex flex-col ml-[5rem] gap-6 pt-9">
+      {/* Add Doctor Form */}
+      {isAdmin && (
+        <div className="flex gap-4">
+          <div className="flex gap-4">
+            <Input
+              type="text"
+              placeholder="Doctor Name"
+              value={newDoctor.dName}
+              onChange={(e) => setNewDoctor({ ...newDoctor, dName: e.target.value })}
+              className="placeholder-gray-700 bg-white border-none outline-none focus:outline-none focus:ring-0 focus:border-none"
+            />
+            <Input
+              type="text"
+              placeholder="Sphere"
+              value={newDoctor.sphere}
+              onChange={(e) => setNewDoctor({ ...newDoctor, sphere: e.target.value })}
+              className="placeholder-gray-700 bg-white border-none outline-none focus:outline-none focus:ring-0 focus:border-none"
+            />
+          </div>
+          <Button onClick={handleAddDoctor}>Add Doctor</Button>
+        </div>
+      )}
+
+      {/* Doctors List */}
+      <div className="flex flex-wrap gap-3">
+        {doctors.map((doctor, index) => (
+          <Card
+            key={doctor._id}
+            color="transparent"
+            shadow={false}
+            className="w-full hover:shadow-lg duration-500 max-w-[28rem] border border-gray-300 bg-white p-5"
+          >
+            <CardHeader color="transparent" floated={false} shadow={false} className="mx-0 flex items-center gap-4 pt-0 pb-8">
+              <Avatar
+                size="lg"
+                variant="circular"
+                src={staticImages[index % staticImages.length]}
+                alt={`Doctor ${doctor.dName}`}
+              />
+              <div className="flex w-full flex-col gap-0.5">
+                <div className="flex items-center justify-between">
+                  {editDoctor?.id === doctor._id && isAdmin ? (
+                    <div className="flex flex-col gap-2">
+                      <Input
+                        value={editDoctor.dName}
+                        onChange={(e) => setEditDoctor({ ...editDoctor, dName: e.target.value })}
+                        className="placeholder-gray-700 bg-white border border-gray-300 rounded-md focus:ring focus:ring-blue-500"
+                      />
+                      <Input
+                        value={editDoctor.sphere}
+                        onChange={(e) => setEditDoctor({ ...editDoctor, sphere: e.target.value })}
+                        className="placeholder-gray-700 bg-white border border-gray-300 rounded-md focus:ring focus:ring-blue-500"
+                      />
+                      <Button onClick={() => handleUpdateDoctor(doctor._id)}>Save</Button>
+                    </div>
+                  ) : (
+                    <>
+                      <Typography variant="h5" color="blue-gray">{doctor.dName}</Typography>
+                      <Typography>{doctor.sphere}</Typography>
+                    </>
+                  )}
                 </div>
               </div>
-            </div>
-          </CardHeader>
-          <div className="p-0 flex items-center justify-between">
-            <Typography>{doctor.specialty}</Typography>
-            <Button>Ko'proq</Button>
-          </div>
-        </Card>
-      ))}
+            </CardHeader>
+            {isAdmin && (
+              <div className="flex gap-2 mt-2">
+                <Button
+                  onClick={() => setEditDoctor({ id: doctor._id, dName: doctor.dName, sphere: doctor.sphere })}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
+                >
+                  Edit
+                </Button>
+                <Button
+                  onClick={() => handleDelete(doctor._id)}
+                  className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-300"
+                >
+                  Delete
+                </Button>
+              </div>
+            )}
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }

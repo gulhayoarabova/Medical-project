@@ -42,7 +42,7 @@ export const baza = [
         icon: <MessageSquarePlus className="h-5 w-5" />,
         title: "Personal Doctor",
         navigate: "/personal",
-        role: ["bemor"],
+        role: ["bemor","admin"],
 
       },
       {

@@ -41,7 +41,7 @@ export const baza1 = [
         id: "4",
         element: <PersonalDoctor/>,
         path:  "personal",
-        role: ["bemor","doctor"],
+        role: ["bemor","doctor","admin"],
 
       },
       {
